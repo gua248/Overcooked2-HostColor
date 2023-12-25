@@ -41,10 +41,10 @@ namespace OC2HostColor
         private static void AddHostColorSettingsUI()
         {
             if (modSettingsMenu == null || hostColorOption != null) return;
-            GameObject hostColorOptionObj = GameObject.Instantiate(gameSettingsMenu.transform.GetChild(0).Find("ContentPC").GetChild(1).GetChild(0).GetChild(2).gameObject);
+            GameObject hostColorOptionObj = GameObject.Instantiate(gameSettingsMenu.transform.Find("SettingsBody/ContentPC/Viewport/Content/Resolution").gameObject);
             hostColorOptionObj.name = "HostColor";
-            hostColorOptionObj.transform.SetParent(modSettingsMenu.transform.GetChild(0).Find("ContentPC").GetChild(1).GetChild(0), false);
-            T17Text text = hostColorOptionObj.transform.GetChild(0).GetComponent<T17Text>();
+            hostColorOptionObj.transform.SetParent(modSettingsMenu.transform.Find("SettingsBody/ContentPC/Viewport/Content"), false);
+            T17Text text = hostColorOptionObj.transform.Find("Title").GetComponent<T17Text>();
             if (Localization.GetLanguage() == SupportedLanguages.Chinese)
             {
                 text.text = "主机位置";
@@ -73,23 +73,24 @@ namespace OC2HostColor
             GameObject root = GameObject.Find("FrontendRootMenu");
             if (root == null) return;
             FrontendRootMenu frontendRootMenu = root.GetComponent<FrontendRootMenu>();
-            gameSettingsMenu = root.transform.GetChild(1).GetChild(0).Find("GameOptions").GetComponent<FrontendOptionsMenu>();
-            modSettingsMenu = root.transform.GetChild(1).GetChild(0).Find("ModOptions")?.GetComponent<FrontendOptionsMenu>();
+            gameSettingsMenu = root.transform.Find("FixedAspectRootCanvas/ScreenSpaceCanvas/GameOptions").GetComponent<FrontendOptionsMenu>();
+            modSettingsMenu = root.transform.Find("FixedAspectRootCanvas/ScreenSpaceCanvas/ModOptions")?.GetComponent<FrontendOptionsMenu>();
             if (modSettingsMenu != null) return;
 
-            Transform settingsTab = root.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(4);
-            float dh = settingsTab.GetChild(0).GetComponent<RectTransform>().rect.height;
+            Transform settingsTab = root.transform.Find("WorldSpaceCanvas/Safezone_Rootmenu/RootTab/SettingsOptions");
+            float dh = settingsTab.Find("GameSettings").GetComponent<RectTransform>().rect.height;
             RectTransform rect = settingsTab.GetComponent<RectTransform>();
             float h = rect.rect.height;
             rect.offsetMin += new Vector2(0, -dh);
             float py = rect.pivot.y;
             rect.pivot = new Vector2(rect.pivot.x, (h * py + dh) / (h + dh));
-            T17Button modSettingsButton = GameObject.Instantiate(settingsTab.GetChild(0).gameObject).GetComponent<T17Button>();
+            T17Button modSettingsButton = GameObject.Instantiate(settingsTab.Find("GameSettings").gameObject).GetComponent<T17Button>();
             modSettingsButton.gameObject.name = "ModSettings";
             modSettingsButton.transform.SetParent(settingsTab, false);
             modSettingsButton.transform.SetSiblingIndex(3);
+            settingsTab.GetChild(4).localPosition += new Vector3(0, -dh, 0);
 
-            T17Button credits = settingsTab.GetChild(2).GetComponent<T17Button>();
+            T17Button credits = settingsTab.Find("Credits").GetComponent<T17Button>();
             Navigation navigation1 = credits.navigation;
             navigation1.selectOnDown = modSettingsButton;
             credits.navigation = navigation1;
@@ -98,7 +99,7 @@ namespace OC2HostColor
             navigation2.selectOnUp = credits;
             modSettingsButton.navigation = navigation2;
 
-            T17Text text = modSettingsButton.transform.GetChild(2).GetComponent<T17Text>();
+            T17Text text = modSettingsButton.transform.Find("Text").GetComponent<T17Text>();
             if (Localization.GetLanguage() == SupportedLanguages.Chinese)
             {
                 text.text = "MOD";
@@ -109,7 +110,6 @@ namespace OC2HostColor
                 text.text = "MODs";
                 text.m_LocalizationTag = "\"MODs\"";
             }
-            settingsTab.GetChild(4).localPosition += new Vector3(0, -dh, 0);
 
             GameObject modSettingsMenuObj = GameObject.Instantiate(gameSettingsMenu.gameObject);
             modSettingsMenuObj.name = "ModOptions";
@@ -117,7 +117,7 @@ namespace OC2HostColor
             modSettingsMenuObj.transform.SetParent(gameSettingsMenu.transform.parent, false);
             modSettingsMenuObj.transform.SetSiblingIndex(2);
             modSettingsMenu = modSettingsMenuObj.GetComponent<FrontendOptionsMenu>();
-            text = modSettingsMenu.transform.GetChild(0).Find("HeaderBacker").GetChild(0).GetComponent<T17Text>();
+            text = modSettingsMenu.transform.Find("SettingsBody/HeaderBacker/Header").GetComponent<T17Text>();
             if (Localization.GetLanguage() == SupportedLanguages.Chinese)
             {
                 text.text = "MOD设定";
@@ -128,12 +128,12 @@ namespace OC2HostColor
                 text.text = "MOD SETTINGS";
                 text.m_LocalizationTag = "\"MOD SETTINGS\"";
             }
-            Transform settingsBody = modSettingsMenu.transform.GetChild(0);
+            Transform settingsBody = modSettingsMenu.transform.Find("SettingsBody");
             settingsBody.Find("Cancel").gameObject.Destroy();
             settingsBody.Find("Confirm").gameObject.Destroy();
             settingsBody.Find("ContentConsole").gameObject.Destroy();
             settingsBody.Find("VersionNumber").gameObject.Destroy();
-            Transform content = settingsBody.Find("ContentPC").GetChild(1).GetChild(0);
+            Transform content = settingsBody.Find("ContentPC/Viewport/Content");
             for (int i = content.childCount - 1; i >= 0; i--)
                 content.GetChild(i).gameObject.Destroy();
             rect = settingsBody.Find("ContentPC").GetComponent<RectTransform>();
